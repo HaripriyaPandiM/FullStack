@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Quiz App</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: white;
+        }
+        
+        .quiz-container {
+            max-width: 700px;
+            margin: 60px auto;
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .option:hover {
+            background: #f1f1f1;
+        }
+        
+        .correct {
+            background: #28a745 !important;
+            color: white;
+        }
+        
+        .wrong {
+            background: #dc3545 !important;
+            color: white;
+        }
+        
+        .progress {
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="quiz-container">
+        <h2 class="text-center mb-4">Smart Quiz Application</h2>
+
+        <div id="quizBox">
+            <h5 id="question"></h5>
+            <div id="options"></div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-between">
+            <button class="btn btn-secondary" id="prevBtn">Previous</button>
+            <button class="btn btn-primary" id="nextBtn">Next</button>
+        </div>
+
+        <div class="progress mt-4">
+            <div class="progress-bar" id="progressBar" role="progressbar"></div>
+        </div>
+
+        <div id="result" class="text-center mt-4"></div>
+    </div>
+
+    <script>
+        const quizData = [{
+            question: "Which language is used for web apps?",
+            options: ["Python", "JavaScript", "C++", "Java"],
+            answer: 1
+        }, {
+            question: "Which library is used for jQuery?",
+            options: ["React", "Angular", "jQuery", "Vue"],
+            answer: 2
+        }, {
+            question: "Bootstrap is used for?",
+            options: ["Database", "Styling", "Server", "AI"],
+            answer: 1
+        }];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+
+        function loadQuestion() {
+            let q = quizData[currentQuestion];
+
+            $("#question").text((currentQuestion + 1) + ". " + q.question);
+            $("#options").empty();
+
+            q.options.forEach((opt, index) => {
+                $("#options").append(`<div class='option' data-index='${index}'>${opt}</div>`);
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            let progress = ((currentQuestion) / quizData.length) * 100;
+            $("#progressBar").css("width", progress + "%");
+        }
+
+        $(document).on("click", ".option", function() {
+            $(".option").removeClass("selected");
+            $(this).addClass("selected");
+
+            userAnswers[currentQuestion] = $(this).data("index");
+        });
+
+        $("#nextBtn").click(function() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        });
+
+        $("#prevBtn").click(function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        function showResult() {
+            let score = 0;
+            quizData.forEach((q, index) => {
+                if (q.answer == userAnswers[index]) score++;
+            });
+
+            $("#quizBox").hide();
+            $("#nextBtn").hide();
+            $("#prevBtn").hide();
+            $("#progressBar").css("width", "100%");
+
+            $("#result").html(`<h3>Your Score: ${score} / ${quizData.length}</h3>`);
+        }
+
+        loadQuestion();
+    </script>
+
+</body>
+
+</html>
